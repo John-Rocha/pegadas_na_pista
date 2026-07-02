@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../features/auth/di/auth_injection.dart';
 import '../../features/trail/di/trail_injection.dart';
 import '../auth/auth_token_storage.dart';
 import '../database/database_helper.dart';
@@ -35,5 +36,6 @@ Future<void> initDependencies() async {
     )
     ..registerLazySingleton<Dio>(() => sl<ApiClient>().dio);
 
+  initAuthDependencies(sl);
   initTrailDependencies(sl);
 }
