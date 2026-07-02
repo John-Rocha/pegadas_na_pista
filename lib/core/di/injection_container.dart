@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../features/auth/di/auth_injection.dart';
 import '../../features/trail/di/trail_injection.dart';
+import '../../features/wildlife_record/di/wildlife_record_injection.dart';
 import '../auth/auth_token_storage.dart';
 import '../database/database_helper.dart';
 import '../location/location_service.dart';
@@ -38,4 +39,5 @@ Future<void> initDependencies() async {
 
   initAuthDependencies(sl);
   initTrailDependencies(sl);
+  initWildlifeRecordDependencies(sl);
 }
