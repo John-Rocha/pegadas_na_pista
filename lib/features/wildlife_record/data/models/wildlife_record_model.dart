@@ -94,8 +94,6 @@ class WildlifeRecordModel extends WildlifeRecord {
     'dadosAvistamento': dadosAvistamento == null
         ? null
         : SightingDetailsModel.fromEntity(dadosAvistamento!).toJson(),
-    'fotos': fotos
-        .map((f) => RecordPhotoModel.fromEntity(f).toJson())
-        .toList(),
+    'fotos': fotos.map((f) => RecordPhotoModel.fromEntity(f).toJson()).toList(),
   };
 }
