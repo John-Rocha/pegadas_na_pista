@@ -9,3 +9,27 @@ class PermissionException implements Exception {
 
   final String message;
 }
+
+class ServerException implements Exception {
+  ServerException(this.message);
+
+  final String message;
+}
+
+class NetworkException implements Exception {
+  NetworkException(this.message);
+
+  final String message;
+}
+
+class UnauthorizedException implements Exception {
+  UnauthorizedException(this.message);
+
+  final String message;
+}
+
+class ValidationException implements Exception {
+  ValidationException(this.message);
+
+  final String message;
+}

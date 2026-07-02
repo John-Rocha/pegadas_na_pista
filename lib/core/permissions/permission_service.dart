@@ -9,6 +9,8 @@ class PermissionService {
 
   Future<Result<void>> requestCameraPermission() => _request(Permission.camera);
 
+  Future<Result<void>> requestGalleryPermission() => _request(Permission.photos);
+
   Future<Result<void>> _request(Permission permission) async {
     final status = await permission.request();
     if (status.isGranted) {
