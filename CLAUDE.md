@@ -42,3 +42,30 @@ fvm flutter build ios            # iOS build
 - **Files**: `path`, `path_provider`.
 
 When adding new code, follow the existing `lib/core/*` (cross-cutting infrastructure) vs `lib/features/*` (feature modules) split implied by the current folder layout, rather than introducing a different structure.
+
+## Constructor convention
+
+Every class has a **single, plain constructor** (no `.create`/`.of`-style name, no private `._` constructor paired with a factory). Bind fields with **named parameters via initializing formals** (`required this.field`), the way `trail_recording_cubit.dart` and `trail_recording_state.dart` do:
+
+```dart
+class TrailRecordingCubit extends Cubit<TrailRecordingState> {
+  TrailRecordingCubit({required this.startTrail, required this.locationService})
+      : super(const TrailRecordingIdle());
+
+  final StartTrail startTrail;
+  final LocationService locationService;
+}
+
+final class TrailRecordingInProgress extends TrailRecordingState {
+  const TrailRecordingInProgress({required this.trail});
+
+  final Trail trail;
+}
+```
+
+Fields backing a named constructor parameter are **public** (no leading underscore). Dart can never resolve a named argument against a private identifier — not from another file, not even from the same file — so `required this._field` is a broken constructor, not just a style nit; it cannot be called with a named argument anywhere. Keep fields private only when they're *not* constructor parameters (derived/internal state).
+
+Exceptions:
+- **Flutter widgets** (`StatelessWidget`/`StatefulWidget`) keep `super.key` — framework convention.
+- **Zero-field static-utility classes** (e.g. `AppRouter`) need no explicit constructor at all.
+- **Zero-field marker classes** (e.g. `TrailRecordingIdle`) just declare `const ClassName();`.
