@@ -8,6 +8,8 @@
 	<string>Pegadas na Pista uses your location to record trail points as you walk.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Pegadas na Pista uses the camera to attach photos to trail points.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pegadas na Pista uses your photo library to attach photos to wildlife records.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
