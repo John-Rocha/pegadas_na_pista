@@ -9,6 +9,7 @@ import '../domain/repositories/wildlife_record_repository.dart';
 import '../domain/usecases/create_wildlife_record.dart';
 import '../domain/usecases/get_especies.dart';
 import '../domain/usecases/upload_record_photo.dart';
+import '../presentation/cubit/wildlife_record_cubit.dart';
 
 void initWildlifeRecordDependencies(GetIt sl) {
   sl
@@ -26,5 +27,15 @@ void initWildlifeRecordDependencies(GetIt sl) {
     )
     ..registerLazySingleton(() => CreateWildlifeRecord(repository: sl()))
     ..registerLazySingleton(() => UploadRecordPhoto(repository: sl()))
-    ..registerLazySingleton(() => GetEspecies(repository: sl()));
+    ..registerLazySingleton(() => GetEspecies(repository: sl()))
+    ..registerFactory(
+      () => WildlifeRecordCubit(
+        createWildlifeRecord: sl(),
+        uploadRecordPhoto: sl(),
+        getEspecies: sl(),
+        locationService: sl(),
+        mediaService: sl(),
+        permissionService: sl(),
+      ),
+    );
 }

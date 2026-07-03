@@ -40,9 +40,23 @@ class TrailListPage extends StatelessWidget {
             };
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => context.push('/trails/record'),
-          child: const Icon(Icons.add_location_alt),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            FloatingActionButton.extended(
+              heroTag: 'record-wildlife',
+              onPressed: () => context.push('/registrar-ocorrencia'),
+              icon: const Icon(Icons.pets),
+              label: const Text('Registrar ocorrência'),
+            ),
+            const SizedBox(height: 12),
+            FloatingActionButton(
+              heroTag: 'record-trail',
+              onPressed: () => context.push('/trails/record'),
+              child: const Icon(Icons.add_location_alt),
+            ),
+          ],
         ),
       ),
     );
