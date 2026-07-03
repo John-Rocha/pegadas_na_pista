@@ -27,7 +27,7 @@ class AuthInterceptor extends Interceptor {
   ) async {
     if (err.response?.statusCode == 401) {
       await tokenStorage.clearTokens();
-      AppRouter.router.go('/login');
+      AppRouter.router.go('/login?expired=true');
     }
     handler.next(err);
   }

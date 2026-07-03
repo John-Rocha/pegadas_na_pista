@@ -15,6 +15,7 @@ import '../widgets/record_type_selector.dart';
 import '../widgets/roadkill_details_form.dart';
 import '../widgets/sighting_details_form.dart';
 import '../widgets/species_selector.dart';
+import '../widgets/wildlife_record_review_section.dart';
 
 class WildlifeRecordFormPage extends StatelessWidget {
   const WildlifeRecordFormPage({super.key});
@@ -61,6 +62,15 @@ class WildlifeRecordFormPage extends StatelessWidget {
               WildlifeRecordUploadingPhotos() => const Center(
                 child: CircularProgressIndicator(),
               ),
+              WildlifeRecordFormEditing(
+                draft: final draft,
+                isReviewing: true,
+              ) =>
+                WildlifeRecordReviewSection(
+                  draft: draft,
+                  onEdit: cubit.backToEdit,
+                  onSubmit: cubit.submit,
+                ),
               WildlifeRecordFormEditing(
                 draft: final draft,
                 especies: final especies,
@@ -154,8 +164,8 @@ class WildlifeRecordFormPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
-                        onPressed: cubit.submit,
-                        child: const Text('Enviar'),
+                        onPressed: cubit.validateAndReview,
+                        child: const Text('Revisar'),
                       ),
                     ],
                   ),

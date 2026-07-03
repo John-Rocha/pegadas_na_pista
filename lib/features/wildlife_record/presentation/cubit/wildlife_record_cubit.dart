@@ -16,6 +16,21 @@ import '../../domain/usecases/get_especies.dart';
 import '../../domain/usecases/upload_record_photo.dart';
 import 'wildlife_record_state.dart';
 
+const _locationErrorMessage =
+    'Não foi possível obter sua localização. Verifique se a permissão de '
+    'localização está ativada e tente novamente.';
+const _cameraErrorMessage =
+    'Não foi possível acessar a câmera. Verifique as permissões do '
+    'aplicativo.';
+const _galleryErrorMessage =
+    'Não foi possível acessar a galeria. Verifique as permissões do '
+    'aplicativo.';
+const _submitErrorMessage =
+    'Não foi possível enviar o registro. Verifique sua conexão e tente '
+    'novamente.';
+const _requiredFieldsErrorMessage =
+    'Preencha os campos obrigatórios antes de continuar.';
+
 class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
   WildlifeRecordCubit({
     required this.createWildlifeRecord,
@@ -38,14 +53,14 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
 
     final permissionResult = await permissionService
         .requestLocationPermission();
-    if (permissionResult case Error(:final failure)) {
-      emit(WildlifeRecordError(message: failure.message));
+    if (permissionResult case Error()) {
+      emit(const WildlifeRecordError(message: _locationErrorMessage));
       return;
     }
 
     final positionResult = await locationService.getCurrentPosition();
-    if (positionResult case Error(:final failure)) {
-      emit(WildlifeRecordError(message: failure.message));
+    if (positionResult case Error()) {
+      emit(const WildlifeRecordError(message: _locationErrorMessage));
       return;
     }
     final position = (positionResult as Success<Position>).value;
@@ -91,10 +106,8 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
             ),
           ),
         );
-      case Error(failure: final failure):
-        emit(
-          currentState.copyWith(validationError: failure.message),
-        );
+      case Error():
+        emit(currentState.copyWith(validationError: _locationErrorMessage));
     }
   }
 
@@ -111,8 +124,14 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
     final permissionResult = source == ImageSource.camera
         ? await permissionService.requestCameraPermission()
         : await permissionService.requestGalleryPermission();
-    if (permissionResult case Error(:final failure)) {
-      emit(currentState.copyWith(validationError: failure.message));
+    if (permissionResult case Error()) {
+      emit(
+        currentState.copyWith(
+          validationError: source == ImageSource.camera
+              ? _cameraErrorMessage
+              : _galleryErrorMessage,
+        ),
+      );
       return;
     }
 
@@ -153,7 +172,7 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
 
   String? _validate(WildlifeRecord draft) {
     if (draft.type == WildlifeRecordType.roadkill && draft.fotos.isEmpty) {
-      return 'Preencha os campos obrigatórios antes de continuar.';
+      return _requiredFieldsErrorMessage;
     }
     return null;
   }
@@ -206,8 +225,8 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
         switch (uploadResult) {
           case Success(value: final uploaded):
             uploadedPhotos.add(uploaded);
-          case Error(failure: final failure):
-            emit(WildlifeRecordError(message: failure.message));
+          case Error():
+            emit(const WildlifeRecordError(message: _submitErrorMessage));
             return;
         }
       }
@@ -221,8 +240,8 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
     switch (result) {
       case Success(value: final record):
         emit(WildlifeRecordSuccess(record: record));
-      case Error(failure: final failure):
-        emit(WildlifeRecordError(message: failure.message));
+      case Error():
+        emit(const WildlifeRecordError(message: _submitErrorMessage));
     }
   }
 }

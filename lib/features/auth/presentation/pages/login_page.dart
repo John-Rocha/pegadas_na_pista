@@ -16,12 +16,33 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
+  bool _shownExpiredMessage = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _senhaController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_shownExpiredMessage) return;
+    final expired =
+        GoRouterState.of(context).uri.queryParameters['expired'] == 'true';
+    if (!expired) return;
+    _shownExpiredMessage = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Sua sessão expirou. Faça login novamente para continuar.',
+          ),
+        ),
+      );
+    });
   }
 
   @override
