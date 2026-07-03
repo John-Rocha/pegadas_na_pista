@@ -1,22 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pegadas_na_pista/core/errors/exceptions.dart';
 import 'package:pegadas_na_pista/core/errors/failures.dart';
 import 'package:pegadas_na_pista/core/result.dart';
-import 'package:pegadas_na_pista/features/wildlife_record/data/datasources/wildlife_record_remote_datasource.dart';
+import 'package:pegadas_na_pista/features/wildlife_record/data/datasources/wildlife_record_local_datasource.dart';
 import 'package:pegadas_na_pista/features/wildlife_record/data/models/record_photo_model.dart';
 import 'package:pegadas_na_pista/features/wildlife_record/data/models/wildlife_record_model.dart';
 import 'package:pegadas_na_pista/features/wildlife_record/data/repositories/wildlife_record_repository_impl.dart';
 import 'package:pegadas_na_pista/features/wildlife_record/domain/entities/wildlife_record.dart';
 import 'package:pegadas_na_pista/features/wildlife_record/domain/entities/wildlife_record_type.dart';
 
-class MockWildlifeRecordRemoteDataSource extends Mock
-    implements WildlifeRecordRemoteDataSource {}
+class MockWildlifeRecordLocalDataSource extends Mock
+    implements WildlifeRecordLocalDataSource {}
 
 class FakeWildlifeRecordModel extends Fake implements WildlifeRecordModel {}
 
 void main() {
-  late MockWildlifeRecordRemoteDataSource remoteDataSource;
+  late MockWildlifeRecordLocalDataSource localDataSource;
   late WildlifeRecordRepositoryImpl repository;
 
   setUpAll(() {
@@ -24,10 +23,8 @@ void main() {
   });
 
   setUp(() {
-    remoteDataSource = MockWildlifeRecordRemoteDataSource();
-    repository = WildlifeRecordRepositoryImpl(
-      remoteDataSource: remoteDataSource,
-    );
+    localDataSource = MockWildlifeRecordLocalDataSource();
+    repository = WildlifeRecordRepositoryImpl(localDataSource: localDataSource);
   });
 
   final record = WildlifeRecord(
@@ -40,7 +37,7 @@ void main() {
 
   group('createRecord', () {
     test('returns created record with id on success', () async {
-      when(() => remoteDataSource.createRecord(any())).thenAnswer(
+      when(() => localDataSource.createRecord(any())).thenAnswer(
         (_) async => {'idRegistro': 'r1', 'statusValidacao': 'pendente'},
       );
 
@@ -50,38 +47,28 @@ void main() {
       expect((result as Success).value.id, 'r1');
     });
 
-    test('returns ServerFailure on ServerException', () async {
+    test('returns DatabaseFailure on error', () async {
       when(
-        () => remoteDataSource.createRecord(any()),
-      ).thenThrow(ServerException('Erro no servidor.'));
+        () => localDataSource.createRecord(any()),
+      ).thenThrow(Exception('boom'));
 
       final result = await repository.createRecord(record);
 
-      expect((result as Error).failure, isA<ServerFailure>());
-    });
-
-    test('returns NetworkFailure on NetworkException', () async {
-      when(
-        () => remoteDataSource.createRecord(any()),
-      ).thenThrow(NetworkException('Sem conexão.'));
-
-      final result = await repository.createRecord(record);
-
-      expect((result as Error).failure, isA<NetworkFailure>());
+      expect((result as Error).failure, isA<DatabaseFailure>());
     });
   });
 
   group('uploadPhoto', () {
     test('returns uploaded photo on success', () async {
       when(
-        () => remoteDataSource.uploadPhoto(
+        () => localDataSource.uploadPhoto(
           localPath: any(named: 'localPath'),
           tipoFoto: any(named: 'tipoFoto'),
           registroId: any(named: 'registroId'),
         ),
       ).thenAnswer(
         (_) async => const RecordPhotoModel(
-          urlFoto: 'https://storage.app/foto1.jpg',
+          localPath: '/tmp/foto.jpg',
           tipoFoto: 'animal',
         ),
       );

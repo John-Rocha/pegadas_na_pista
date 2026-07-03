@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
 
-import '../data/datasources/especie_remote_datasource.dart';
-import '../data/datasources/wildlife_record_remote_datasource.dart';
+import '../data/datasources/especie_local_datasource.dart';
+import '../data/datasources/wildlife_record_local_datasource.dart';
 import '../data/repositories/especie_repository_impl.dart';
 import '../data/repositories/wildlife_record_repository_impl.dart';
 import '../domain/repositories/especie_repository.dart';
@@ -13,17 +13,17 @@ import '../presentation/cubit/wildlife_record_cubit.dart';
 
 void initWildlifeRecordDependencies(GetIt sl) {
   sl
-    ..registerLazySingleton<WildlifeRecordRemoteDataSource>(
-      () => WildlifeRecordRemoteDataSourceImpl(dio: sl()),
+    ..registerLazySingleton<WildlifeRecordLocalDataSource>(
+      () => WildlifeRecordLocalDataSourceImpl(databaseHelper: sl()),
     )
-    ..registerLazySingleton<EspecieRemoteDataSource>(
-      () => EspecieRemoteDataSourceImpl(dio: sl()),
+    ..registerLazySingleton<EspecieLocalDataSource>(
+      EspecieLocalDataSourceImpl.new,
     )
     ..registerLazySingleton<WildlifeRecordRepository>(
-      () => WildlifeRecordRepositoryImpl(remoteDataSource: sl()),
+      () => WildlifeRecordRepositoryImpl(localDataSource: sl()),
     )
     ..registerLazySingleton<EspecieRepository>(
-      () => EspecieRepositoryImpl(remoteDataSource: sl()),
+      () => EspecieRepositoryImpl(localDataSource: sl()),
     )
     ..registerLazySingleton(() => CreateWildlifeRecord(repository: sl()))
     ..registerLazySingleton(() => UploadRecordPhoto(repository: sl()))
