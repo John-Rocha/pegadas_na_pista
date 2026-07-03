@@ -24,6 +24,8 @@ class WildlifeRecordModel extends WildlifeRecord {
     super.dadosAvistamento,
     super.fotos,
     super.statusValidacao,
+    super.syncStatus,
+    super.remoteId,
   });
 
   factory WildlifeRecordModel.fromEntity(WildlifeRecord record) =>
@@ -46,6 +48,8 @@ class WildlifeRecordModel extends WildlifeRecord {
         dadosAvistamento: record.dadosAvistamento,
         fotos: record.fotos,
         statusValidacao: record.statusValidacao,
+        syncStatus: record.syncStatus,
+        remoteId: record.remoteId,
       );
 
   factory WildlifeRecordModel.fromCreateResponse(
@@ -70,6 +74,8 @@ class WildlifeRecordModel extends WildlifeRecord {
     dadosAvistamento: submitted.dadosAvistamento,
     fotos: submitted.fotos,
     statusValidacao: json['statusValidacao'] as String? ?? 'pendente',
+    syncStatus: submitted.syncStatus,
+    remoteId: submitted.remoteId,
   );
 
   Map<String, dynamic> toJson() => {

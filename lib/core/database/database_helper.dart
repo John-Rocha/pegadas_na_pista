@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const _databaseName = 'pegadas_na_pista.db';
-  static const _databaseVersion = 2;
+  static const _databaseVersion = 3;
 
   Database? _database;
 
@@ -47,6 +47,16 @@ class DatabaseHelper {
     if (oldVersion < 2) {
       await _createWildlifeRecordTables(db);
     }
+    if (oldVersion == 2) {
+      await _addSyncColumns(db);
+    }
+  }
+
+  Future<void> _addSyncColumns(Database db) async {
+    await db.execute('''
+      ALTER TABLE wildlife_records ADD COLUMN sync_status TEXT NOT NULL DEFAULT 'pending'
+    ''');
+    await db.execute('ALTER TABLE wildlife_records ADD COLUMN remote_id TEXT');
   }
 
   Future<void> _createWildlifeRecordTables(Database db) async {
@@ -66,6 +76,8 @@ class DatabaseHelper {
         municipio TEXT,
         observacoes TEXT,
         status_validacao TEXT NOT NULL DEFAULT 'pendente',
+        sync_status TEXT NOT NULL DEFAULT 'pending',
+        remote_id TEXT,
         created_at TEXT NOT NULL
       )
     ''');

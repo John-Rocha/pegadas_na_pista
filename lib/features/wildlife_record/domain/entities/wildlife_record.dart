@@ -4,6 +4,7 @@ import 'environmental_data.dart';
 import 'record_photo.dart';
 import 'roadkill_details.dart';
 import 'sighting_details.dart';
+import 'wildlife_record_sync_status.dart';
 import 'wildlife_record_type.dart';
 
 class WildlifeRecord extends Equatable {
@@ -26,6 +27,8 @@ class WildlifeRecord extends Equatable {
     this.dadosAvistamento,
     this.fotos = const [],
     this.statusValidacao = 'pendente',
+    this.syncStatus = WildlifeRecordSyncStatus.pending,
+    this.remoteId,
   });
 
   final String? id;
@@ -47,6 +50,15 @@ class WildlifeRecord extends Equatable {
   final List<RecordPhoto> fotos;
   final String statusValidacao;
 
+  /// Local persistence sync state — distinct from [statusValidacao], which is
+  /// the business validation status returned/owned by the backend.
+  final WildlifeRecordSyncStatus syncStatus;
+
+  /// Server-assigned id once synced. [id] stays the stable local identity —
+  /// it must never be overwritten by the remote id, since local rows
+  /// ([RecordPhoto] etc.) key off it.
+  final String? remoteId;
+
   WildlifeRecord copyWith({
     String? id,
     WildlifeRecordType? type,
@@ -66,6 +78,8 @@ class WildlifeRecord extends Equatable {
     SightingDetails? dadosAvistamento,
     List<RecordPhoto>? fotos,
     String? statusValidacao,
+    WildlifeRecordSyncStatus? syncStatus,
+    String? remoteId,
   }) {
     return WildlifeRecord(
       id: id ?? this.id,
@@ -86,6 +100,8 @@ class WildlifeRecord extends Equatable {
       dadosAvistamento: dadosAvistamento ?? this.dadosAvistamento,
       fotos: fotos ?? this.fotos,
       statusValidacao: statusValidacao ?? this.statusValidacao,
+      syncStatus: syncStatus ?? this.syncStatus,
+      remoteId: remoteId ?? this.remoteId,
     );
   }
 
@@ -109,5 +125,7 @@ class WildlifeRecord extends Equatable {
     dadosAvistamento,
     fotos,
     statusValidacao,
+    syncStatus,
+    remoteId,
   ];
 }

@@ -46,6 +46,8 @@ class WildlifeRecordLocalDataSourceImpl
         'municipio': record.municipio,
         'observacoes': record.observacoes,
         'status_validacao': 'pendente',
+        'sync_status': record.syncStatus.name,
+        'remote_id': record.remoteId,
         'created_at': DateTime.now().toIso8601String(),
       });
 
