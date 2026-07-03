@@ -149,4 +149,23 @@ void main() {
       isA<WildlifeRecordError>(),
     ],
   );
+
+  blocTest<WildlifeRecordCubit, WildlifeRecordState>(
+    'blocks submit with inline validation error when roadkill has no photo',
+    setUp: mockHappyLocationAndEspecies,
+    build: buildCubit,
+    act: (cubit) async {
+      await cubit.initializeForm(WildlifeRecordType.roadkill);
+      await cubit.submit();
+    },
+    skip: 2,
+    expect: () => [
+      isA<WildlifeRecordFormEditing>().having(
+        (state) => state.validationError,
+        'validationError',
+        isNotNull,
+      ),
+    ],
+    verify: (_) => verifyNever(() => recordRepository.createRecord(any())),
+  );
 }

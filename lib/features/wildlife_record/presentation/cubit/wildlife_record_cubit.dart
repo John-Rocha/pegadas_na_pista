@@ -151,18 +151,20 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
     );
   }
 
+  String? _validate(WildlifeRecord draft) {
+    if (draft.type == WildlifeRecordType.roadkill && draft.fotos.isEmpty) {
+      return 'Preencha os campos obrigatórios antes de continuar.';
+    }
+    return null;
+  }
+
   void validateAndReview() {
     final currentState = state;
     if (currentState is! WildlifeRecordFormEditing) return;
 
-    final draft = currentState.draft;
-    if (draft.type == WildlifeRecordType.roadkill && draft.fotos.isEmpty) {
-      emit(
-        currentState.copyWith(
-          validationError:
-              'Preencha os campos obrigatórios antes de continuar.',
-        ),
-      );
+    final validationError = _validate(currentState.draft);
+    if (validationError != null) {
+      emit(currentState.copyWith(validationError: validationError));
       return;
     }
 
@@ -178,6 +180,13 @@ class WildlifeRecordCubit extends Cubit<WildlifeRecordState> {
   Future<void> submit() async {
     final currentState = state;
     if (currentState is! WildlifeRecordFormEditing) return;
+
+    final validationError = _validate(currentState.draft);
+    if (validationError != null) {
+      emit(currentState.copyWith(validationError: validationError));
+      return;
+    }
+
     var draft = currentState.draft;
 
     if (draft.fotos.isNotEmpty) {
